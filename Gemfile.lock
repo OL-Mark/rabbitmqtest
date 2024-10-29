@@ -1,0 +1,16 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    amqp-client (1.1.7)
+    dotenv (3.1.4)
+
+PLATFORMS
+  arm64-darwin-24
+  ruby
+
+DEPENDENCIES
+  amqp-client (~> 1.1)
+  dotenv (~> 3.1)
+
+BUNDLED WITH
+   2.5.22

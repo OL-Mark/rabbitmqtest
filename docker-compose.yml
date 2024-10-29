@@ -1,0 +1,46 @@
+services:
+  rabbitmq:
+    image: rabbitmq:4-management-alpine
+    container_name: rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_VHOST=${RABBITMQ_VHOST:-my_vhost}
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER:-guest}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD:-guest}
+    ports:
+      - 15672:15672
+    expose:
+      - ${RABBITMQ_PORT}
+    volumes:
+        - ./tmp/data/:/var/lib/rabbitmq/
+        - ./tmp/log/:/var/log/rabbitmq
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "rabbitmq-diagnostics is_running"]
+      interval: 5s
+      retries: 5
+      start_period: 15s
+      timeout: 5s
+  consumer:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile.consumer
+    container_name: consumer-app
+    env_file:
+      - .env
+    links:
+      - rabbitmq
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+  publisher:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile.publisher
+    container_name: publisher-app
+    env_file:
+      - .env
+    links:
+      - rabbitmq
+    depends_on:
+      rabbitmq:
+        condition: service_healthy

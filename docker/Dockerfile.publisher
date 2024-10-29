@@ -1,0 +1,15 @@
+FROM ruby:3.3.5-bookworm
+
+RUN mkdir /app
+
+COPY Gemfile* /app/
+COPY app/publisher.rb /app/
+
+WORKDIR /app
+
+# throw errors if Gemfile has been modified since Gemfile.lock
+RUN bundle config --global frozen 1
+
+RUN bundle install
+
+CMD ["ruby", "/app/publisher.rb"]
